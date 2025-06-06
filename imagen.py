@@ -83,7 +83,7 @@ output_image_path = 'Learny-master\IMAGENES\Infografia2.jpg'
 print("¿Existe la imagen?", os.path.exists(input_image_path))
 # Texto a buscar y reemplazar
 texts_to_replace = ['Hola', 'Carlos', '17%']
-new_texts = ['Buenas tardes', 'Pedro', '19%']
+new_texts = ['Buenas tardes', 'Pedro', '35%']
 
 # Estilos de texto personalizados
 text_styles = [
