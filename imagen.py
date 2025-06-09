@@ -4,13 +4,20 @@ import numpy as np
 import pytesseract
 from pytesseract import Output
 from PIL import Image, ImageDraw, ImageFont
+import sys
+import pandas as pd
+import chat2
 
 # Ruta de Tesseract-OCR
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
 
+cedula_recuperada=None
+
 def analyze_and_replace_text(input_image_path, output_image_path, texts_to_replace, new_texts, text_styles):
+
+
     # Leer la imagen de entrada
     image = cv2.imread(input_image_path)
 
@@ -75,15 +82,43 @@ def analyze_and_replace_text(input_image_path, output_image_path, texts_to_repla
     cv2.destroyAllWindows()
 
 
-# Rutas de la imagen de entrada y salida
-input_image_path = 'Learny-master\IMAGENES\Infografia.jpg'
 
-output_image_path = 'Learny-master\IMAGENES\Infografia2.jpg'
+#Traer cedula
+if len(sys.argv) > 1:
+        cedula_recuperada = sys.argv[1]
+        print(f"Cédula recibida: {cedula_recuperada}")
+        # Aquí va la lógica para generar la infografía con la cédula
+else:
+        print("No se recibió cédula")
+
+
+df = pd.read_excel('BD.xlsx', dtype={'Cedula': str})
+df['Cedula'] = df['Cedula'].str.strip()
+
+# Buscar la fila con la cédula
+fila = df[df['Cedula'] == cedula_recuperada]
+
+if fila.empty:
+    print(f"No se encontró la cédula {cedula_recuperada} en la base de datos.")
+    sys.exit(1)  # Detener ejecución si no se encontró
+else:
+    print("Fila encontrada:", fila)
+
+# Rutas de la imagen de entrada y salida
+input_image_path = 'IMAGENES\Infografia.jpg'
+
+output_image_path = 'IMAGENES\Infografia2.jpg'
 
 print("¿Existe la imagen?", os.path.exists(input_image_path))
+
+# Obtener datos de la fila
+saldo = fila.iloc[0]['Saldo TC']
+nombre = fila.iloc[0]['Nombre']
+tasa = fila.iloc[0]['Tasa de interes']
+
 # Texto a buscar y reemplazar
-texts_to_replace = ['Hola', 'Carlos', '17%']
-new_texts = ['Buenas tardes', 'Pedro', '35%']
+texts_to_replace = ['50', 'Carlos', '1,31%']
+new_texts = [str(saldo), nombre, str(tasa)]
 
 # Estilos de texto personalizados
 text_styles = [

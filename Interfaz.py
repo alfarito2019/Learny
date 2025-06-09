@@ -3,10 +3,18 @@ from ttkbootstrap.constants import *
 from PIL import Image, ImageTk
 import pandas as pd
 import tkinter.messagebox as msg
+from tkinter import messagebox
 import tkinter as tk  # Agregado para botón con más control visual
+import subprocess
+
+import chat2
+from chat2 import mostrar_chat_ai
+
+
+
 
 # Cargar base de datos
-bd_path = "D:/Pasantia/Learny/BD.xlsx"
+bd_path = "BD.xlsx"
 df = pd.read_excel(bd_path)
 df["Cedula"] = df["Cedula"].astype(str).str.replace(".0", "", regex=False)
 df["Clave"] = df["Clave"].astype(str).str.replace(".0", "", regex=False)
@@ -42,12 +50,15 @@ def clear():
 # --------------------------
 # PANTALLAS
 # --------------------------
+
+#######################################################
+
 def mostrar_pantalla_inicio():
     clear()
     canvas = ttk.Canvas(root, width=360, height=750)
     canvas.pack()
 
-    imagen_inicio = Image.open("D:/Pasantia/Learny/IMG/Imagen1.png").resize((360, 750))
+    imagen_inicio = Image.open("IMAGENES/Imagen1.png").resize((360, 750))
     bg_img1 = ImageTk.PhotoImage(imagen_inicio)
     canvas.create_image(0, 0, anchor="nw", image=bg_img1)
     canvas.bg_img = bg_img1
@@ -60,7 +71,7 @@ def mostrar_pantalla_login():
     canvas = ttk.Canvas(root, width=360, height=750)
     canvas.pack()
 
-    imagen_login = Image.open("D:/Pasantia/Learny/IMG/Imagen2.png").resize((360, 750))
+    imagen_login = Image.open("IMAGENES/Imagen2.png").resize((360, 750))
     bg_img2 = ImageTk.PhotoImage(imagen_login)
     canvas.create_image(0, 0, anchor="nw", image=bg_img2)
     canvas.bg_img = bg_img2
@@ -94,12 +105,15 @@ def mostrar_pantalla_login():
 
     def verificar_entrada(event):
         cedula = entry_documento.get().strip()
+        if cedula:
+            chat2.set_cedula(cedula)
         if cedula in df["Cedula"].values:
             btn_continuar.configure(state="normal", style="DaviviendaRed.TButton")
         else:
             btn_continuar.configure(state="disabled", style="secondary.TButton")
 
     entry_documento.bind("<KeyRelease>", verificar_entrada)
+    
 
 def mostrar_pantalla_clave(cedula):
     global cliente_activo
@@ -107,7 +121,7 @@ def mostrar_pantalla_clave(cedula):
     canvas = ttk.Canvas(root, width=360, height=750)
     canvas.pack()
 
-    imagen_clave = Image.open("D:/Pasantia/Learny/IMG/Imagen3.png").resize((360, 750))
+    imagen_clave = Image.open("IMAGENES/Imagen3.png").resize((360, 750))
     bg_img3 = ImageTk.PhotoImage(imagen_clave)
     canvas.create_image(0, 0, anchor="nw", image=bg_img3)
     canvas.bg_img = bg_img3
@@ -161,13 +175,13 @@ def mostrar_pantalla_principal():
     canvas = ttk.Canvas(root, width=360, height=750)
     canvas.pack()
 
-    imagen_main = Image.open("D:/Pasantia/Learny/IMG/Imagen4.png").resize((360, 750))
+    imagen_main = Image.open("IMAGENES/Imagen4.png").resize((360, 750))
     bg_img4 = ImageTk.PhotoImage(imagen_main)
     canvas.create_image(0, 0, anchor="nw", image=bg_img4)
     canvas.bg_img = bg_img4
 
     # Cargar ícono sin fondo visible
-    icono = Image.open("D:/Pasantia/Learny/IMG/Icono.png").resize((60, 60))
+    icono = Image.open("IMAGENES/Icono.png").resize((60, 60))
     icono_img = ImageTk.PhotoImage(icono)
 
     # Dibujar directamente sobre el canvas (sin botón)
@@ -176,7 +190,8 @@ def mostrar_pantalla_principal():
 
     # Crear una zona invisible encima del ícono que actúe como botón
     def on_click(event):
-        msg.showinfo("Soporte", "Este botón abrirá el chat de asistencia.")
+        # msg.showinfo("Soporte", "Este botón abrirá el chat de asistencia.")
+        mostrar_chat_ai(root)
 
     canvas.tag_bind(icono_canvas, "<Button-1>", on_click)
 
