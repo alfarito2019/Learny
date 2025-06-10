@@ -19,7 +19,7 @@ cliente_activo = None
 # ROOT
 # --------------------------
 root = ttk.Window(themename="flatly")
-root.geometry("360x750")
+root.geometry("360x700")
 root.resizable(False, False)
 
 # --------------------------
@@ -264,8 +264,8 @@ def mostrar_chat():
                        fill="white", anchor="center")
     
     # Cuerpo del chat
-    chat_frame = tk.Frame(root, bg="white", height=570)
-    chat_frame.pack(fill="x")
+    chat_frame = tk.Frame(root, bg="white")
+    chat_frame.pack(fill="both", expand=True)
 
     canvas = tk.Canvas(chat_frame, bg="white", highlightthickness=0)
     scrollbar = ttk.Scrollbar(chat_frame, orient="vertical", command=canvas.yview)
@@ -285,16 +285,40 @@ def mostrar_chat():
     entry_msg.pack(side="left", fill="x", expand=True, padx=(0, 10))
 
     def agregar_mensaje_bot(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="white", wraplength=250,
-                           justify="left", anchor="w", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="w", padx=10, pady=4)
+        frame_msg = tk.Frame(mensajes_frame, bg="white")
+        frame_msg.pack(fill="x", padx=10, pady=4, anchor="w")
+
+        burbuja = tk.Label(frame_msg, text=texto, bg="white", wraplength=250,
+                       justify="left", anchor="w", font=("Helvetica", 10), padx=10, pady=5,
+                       bd=1, relief="solid")
+        burbuja.pack(anchor="w", side="left")
+
 
     def agregar_mensaje_usuario(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
-                           justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="e", padx=10, pady=4)
+    # Frame horizontal que contiene la burbuja alineada a la derecha
+        wrapper = tk.Frame(mensajes_frame, bg="white")
+        wrapper.pack(fill="x", padx=10, pady=5)
+
+    # Burbujita del usuario
+        burbuja = tk.Label(wrapper,
+                       text=texto,
+                       bg="#9ECAFF",
+                       fg="black",
+                       font=("Helvetica", 10),
+                       wraplength=360,
+                       justify="left",
+                       anchor="w",
+                       padx=10,
+                       pady=6,
+                       bd=1,
+                       relief="solid")
+
+    # Empacarla a la derecha dentro del contenedor de ancho completo
+        burbuja.pack(anchor="e", side="right")
+
+
+
+
 
     def enviar_mensaje(event=None):
         mensaje = entry_msg.get().strip()
