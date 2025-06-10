@@ -262,10 +262,10 @@ def mostrar_chat():
 
     header.create_text(180, 36, text=f"Hola, {nombre}", font=("Helvetica", 10, "bold"),
                        fill="white", anchor="center")
-
+    
     # Cuerpo del chat
-    chat_frame = tk.Frame(root, bg="white")
-    chat_frame.pack(fill="both", expand=True)
+    chat_frame = tk.Frame(root, bg="white", height=570)
+    chat_frame.pack(fill="x")
 
     canvas = tk.Canvas(chat_frame, bg="white", highlightthickness=0)
     scrollbar = ttk.Scrollbar(chat_frame, orient="vertical", command=canvas.yview)
