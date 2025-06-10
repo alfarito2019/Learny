@@ -3,10 +3,10 @@ from groq import Groq
 import subprocess
 
 # Configura tu clave de API de Groq
-client = Groq(api_key="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")  # <-- Pega tu API Key de Groq aquí
+client = Groq(api_key="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")  # <-- Pega tu API Key de Groq aquí
 
 # Palabras clave para detectar temas bancarios
-PALABRAS_CLAVE = ["interés", "intereses", "crédito", "capital", "cuota", "financiación", "financiamiento", "deuda", "plazo"]
+PALABRAS_CLAVE = ["interés", "intereses", "crédito","credito", "capital", "cuota", "financiación", "financiamiento", "deuda", "plazo"]
 
 
 cedula_usuario = None

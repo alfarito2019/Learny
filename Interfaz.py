@@ -6,6 +6,7 @@ import tkinter.messagebox as msg
 from tkinter import messagebox
 import tkinter as tk  # Agregado para botón con más control visual
 import subprocess
+from groq import Groq
 
 import chat2
 from chat2 import mostrar_chat_ai

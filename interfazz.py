@@ -8,7 +8,7 @@ import tkinter as tk
 # --------------------------
 # BASE DE DATOS Y VARIABLES
 # --------------------------
-bd_path = "D:/Pasantia/Learny/BD.xlsx"
+bd_path = "./BD.xlsx"
 df = pd.read_excel(bd_path)
 df["Cedula"] = df["Cedula"].astype(str).str.replace(".0", "", regex=False)
 df["Clave"] = df["Clave"].astype(str).str.replace(".0", "", regex=False)
@@ -53,12 +53,12 @@ def mostrar_pantalla_inicio():
     canvas = ttk.Canvas(root, width=360, height=750)
     canvas.pack()
 
-    fondo_inicio = Image.open("D:/Pasantia/Learny/IMG/fondo1.png").resize((361, 465))
+    fondo_inicio = Image.open("./IMG/fondo1.png").resize((361, 465))
     bg_img = ImageTk.PhotoImage(fondo_inicio)
     canvas.create_image(0, 0, anchor="nw", image=bg_img)
     canvas.bg_img = bg_img
 
-    logo = Image.open("D:/Pasantia/Learny/IMG/logodav.png").resize((40, 34))
+    logo = Image.open("./IMG/logodav.png").resize((40, 34))
     logo_img = ImageTk.PhotoImage(logo)
     canvas.create_image(20, 20, anchor="nw", image=logo_img)
     canvas.logo_img = logo_img
@@ -78,7 +78,7 @@ def mostrar_pantalla_documento():
     canvas = ttk.Canvas(root, width=360, height=750, background="#EBECF0")
     canvas.pack()
 
-    banner = Image.open("D:/Pasantia/Learny/IMG/Inicio.png").resize((360, 73))
+    banner = Image.open("./IMG/Inicio.png").resize((360, 73))
     banner_img = ImageTk.PhotoImage(banner)
     canvas.create_image(0, 0, anchor="nw", image=banner_img)
     canvas.banner_img = banner_img
@@ -117,7 +117,7 @@ def mostrar_pantalla_clave(cedula):
     canvas = ttk.Canvas(root, width=360, height=750, background="#EBECF0")
     canvas.pack()
 
-    banner = Image.open("D:/Pasantia/Learny/IMG/Inicio.png").resize((360, 73))
+    banner = Image.open("./IMG/Inicio.png").resize((360, 73))
     banner_img = ImageTk.PhotoImage(banner)
     canvas.create_image(0, 0, anchor="nw", image=banner_img)
     canvas.banner_img = banner_img
@@ -186,7 +186,7 @@ def mostrar_pantalla_principal():
 
     banner_canvas = tk.Canvas(frame, width=360, height=73, highlightthickness=0)
     banner_canvas.pack()
-    banner = Image.open("D:/Pasantia/Learny/IMG/inicio2.jpg").resize((360, 73))
+    banner = Image.open("./IMG/inicio2.jpg").resize((360, 73))
     banner_img = ImageTk.PhotoImage(banner)
     banner_canvas.create_image(0, 0, anchor="nw", image=banner_img)
     banner_canvas.image = banner_img
@@ -202,7 +202,7 @@ def mostrar_pantalla_principal():
                               fill="white", anchor="center")
 
     ttk.Label(frame, text="Novedades", font=("Helvetica", 10, "bold"), background="#EBECF0").pack(padx=20, anchor="w")
-    novedades_img = ImageTk.PhotoImage(Image.open("D:/Pasantia/Learny/IMG/Blan1.jpg").resize((314, 130)))
+    novedades_img = ImageTk.PhotoImage(Image.open("./IMG/Blan1.jpg").resize((314, 130)))
     ttk.Label(frame, image=novedades_img, background="#EBECF0").pack(padx=20, pady=5)
     frame.novedades_img = novedades_img
 
@@ -220,18 +220,18 @@ def mostrar_pantalla_principal():
     productos_scroll.pack(padx=10, fill="x")
 
     for img_path in ["Cuenta.jpg", "Tarjetas.jpg", "Creditos.jpg"]:
-        img = ImageTk.PhotoImage(Image.open(f"D:/Pasantia/Learny/IMG/{img_path}").resize((218, 129)))
+        img = ImageTk.PhotoImage(Image.open(f"./IMG/{img_path}").resize((218, 129)))
         lbl = ttk.Label(productos_frame, image=img, style="TLabel")
         lbl.image = img
         lbl.pack(side="left", padx=5)
 
     ttk.Label(frame, text="Servicios destacados", font=("Helvetica", 11, "bold"),
               background="#EBECF0").pack(padx=20, pady=(10, 0), anchor="w")
-    blan2_img = ImageTk.PhotoImage(Image.open("D:/Pasantia/Learny/IMG/blan2.jpg").resize((314, 198)))
+    blan2_img = ImageTk.PhotoImage(Image.open("./IMG/blan2.jpg").resize((314, 198)))
     ttk.Label(frame, image=blan2_img, background="#EBECF0").pack(padx=20, pady=5)
     frame.blan2_img = blan2_img
 
-    icono = Image.open("D:/Pasantia/Learny/IMG/Icono.png").resize((50, 50))
+    icono = Image.open("./IMG/Icono.png").resize((50, 50))
     icono_img = ImageTk.PhotoImage(icono)
     btn_icono = tk.Label(root, image=icono_img, bg="#EBECF0", cursor="hand2")
     btn_icono.image = icono_img
@@ -248,7 +248,7 @@ def mostrar_chat():
     header = tk.Canvas(root, width=360, height=73, highlightthickness=0)
     header.pack()
 
-    banner = Image.open("D:/Pasantia/Learny/IMG/inicio2.jpg").resize((360, 73))
+    banner = Image.open("./IMG/inicio2.jpg").resize((360, 73))
     banner_img = ImageTk.PhotoImage(banner)
     header.create_image(0, 0, anchor="nw", image=banner_img)
     header.image = banner_img
