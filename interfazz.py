@@ -244,96 +244,11 @@ def mostrar_pantalla_principal():
 # CHAT
 # --------------------------
 def mostrar_chat():
-    def scroll_al_final():
-        canvas.update_idletasks()
-        canvas.yview_moveto(1.0)
-
-    def _on_mousewheel(event):
-        canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-    
-    def agregar_mensaje_bot(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="white", wraplength=250,
-                           justify="left", anchor="w", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="w", padx=10, pady=4)
-        scroll_al_final()
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-
-    def agregar_mensaje_usuario(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
-                           justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="e", padx=10, pady=4)
-        scroll_al_final()
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-        
-    def agregar_boton_usuario(texto):
-        burbuja = tk.Button(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
-                    justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
-                    bd=1, relief="solid", command=lambda: print(f"Botón '{texto}' presionado"))
-        burbuja.pack(anchor="e", padx=10, pady=4)
-        
-    def generar_infografia():
-        subprocess.run(["python", "imagen.py",cedula_usuario])
-
-    def enviar_mensaje(event=None):
-        client = Groq(api_key="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")
-        
-        mensaje = entry_msg.get().strip()
-        if mensaje == "":
-            return
-        agregar_mensaje_usuario(mensaje)
-        entry_msg.delete(0, "end")
-        palabras_clave = ["interés", "intereses", "crédito", "créditos", "capital", "cuota", "cuotas"]
-        mensaje_tiene_palabras_clave = any(palabra in mensaje.lower() for palabra in palabras_clave)
-
-        try:
-            # Llamada a Groq con rol de asesor bancario
-            respuesta = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Eres un asesor bancario experto llamado Vivi. Tu objetivo es ayudar a los usuarios con dudas relacionadas con productos financieros, tasas de interés, créditos, simulaciones, inversiones y educación financiera. Responde de forma clara, amigable y profesional. En el primer mensaje preséntate como Hola soy Vivi, un asistente de Davivienda, ¿En qué puedo ayudarte hoy?"
-                    },
-                    {
-                        "role": "user",
-                        "content": mensaje
-                    }
-                ]
-            )
-
-            # Si hay palabras clave, da una respuesta más corta
-            if mensaje_tiene_palabras_clave:
-                respuesta = "📊 Tengo un contenido para ti sobre este tema."
-                root.after(500, lambda: agregar_mensaje_bot(respuesta))
-                print("Mensaje contiene palabras clave financieras, respuesta abreviada.")
-            else:
-                respuesta = respuesta.choices[0].message.content.strip()
-                root.after(500, lambda: agregar_mensaje_bot(respuesta))
-
-        except Exception as e:
-            respuesta = f"Lo siento, ocurrió un error: {e}"
-            root.after(500, lambda: agregar_mensaje_bot(respuesta))
-        
-        
-
-        # Mostrar botón justo debajo del mensaje si aplica
-        if mensaje_tiene_palabras_clave:
-            frame_boton = tk.Frame(chat_frame, bg="white")
-            boton_infografia = tk.Button(frame_boton, text="📥 Generar Infografía", command=generar_infografia)
-            boton_infografia.pack(pady=2)
-            frame_boton.pack(fill="x", padx=10, pady=(0, 10))  # Pegado justo después del mensaje
-            
-        scroll_al_final()
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-    
     clear()
 
-    # Canvas para encabezado con imagen
+    # --- HEADER ---
     header = tk.Canvas(root, width=360, height=73, highlightthickness=0)
     header.pack()
-
     banner = Image.open("./IMG/inicio2.jpg").resize((360, 73))
     banner_img = ImageTk.PhotoImage(banner)
     header.create_image(0, 0, anchor="nw", image=banner_img)
@@ -345,40 +260,105 @@ def mostrar_chat():
             nombre = cliente_activo["Nombre"].split()[0].upper()
         except:
             pass
-
     header.create_text(180, 36, text=f"Hola, {nombre}", font=("Helvetica", 10, "bold"),
                        fill="white", anchor="center")
-    
-    # Cuerpo del chat
-    chat_frame = tk.Frame(root, bg="white", height=570)
-    chat_frame.pack(fill="x")
+
+    # --- ÁREA DE MENSAJES ---
+    chat_frame = tk.Frame(root, bg="white")
+    chat_frame.pack(fill="both", expand=True)
 
     canvas = tk.Canvas(chat_frame, bg="white", highlightthickness=0)
     scrollbar = ttk.Scrollbar(chat_frame, orient="vertical", command=canvas.yview)
     mensajes_frame = tk.Frame(canvas, bg="white")
-
-    mensajes_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-    canvas.create_window((0, 0), window=mensajes_frame, anchor="nw")
+    canvas.create_window((0,0), window=mensajes_frame, anchor="nw")
     canvas.configure(yscrollcommand=scrollbar.set)
+    mensajes_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
+    def scroll_al_final():
+        canvas.update_idletasks()
+        canvas.yview_moveto(1.0)
+
+    def _on_mousewheel(event):
+        canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+    def agregar_mensaje_bot(texto):
+        burbuja = tk.Label(mensajes_frame, text=texto, bg="white", wraplength=250,
+                           justify="left", anchor="w", font=("Helvetica", 10),
+                           padx=10, pady=5, bd=1, relief="solid")
+        burbuja.pack(anchor="w", padx=10, pady=4)
+        scroll_al_final()
+
+    def agregar_mensaje_usuario(texto):
+        burbuja = tk.Label(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
+                           justify="left", anchor="e", font=("Helvetica", 10),
+                           padx=10, pady=5, bd=1, relief="solid")
+        burbuja.pack(anchor="e", padx=10, pady=4)
+        scroll_al_final()
+
+    def generar_infografia():
+        ced = cliente_activo["Cedula"] if cliente_activo else ""
+        subprocess.run(["python", "imagen.py", ced])
+
+    # == AQUI VA TODA LA LÓGICA DE ENVÍO ==
+    def enviar_mensaje(event=None):
+        client = Groq(api_key="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")
+
+        mensaje = entry_msg.get().strip()
+        if not mensaje:
+            return
+
+        # 1) Muestro el mensaje del usuario
+        agregar_mensaje_usuario(mensaje)
+        entry_msg.delete(0, "end")
+
+        # 2) Detecto si hay palabras clave
+        palabras_clave = ["interés", "intereses", "crédito", "créditos", "capital", "cuota", "cuotas"]
+        tiene_clave = any(p in mensaje.lower() for p in palabras_clave)
+
+        # 3) Llamo a Groq
+        try:
+            respuesta = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "system", "content":
+                        "Eres un asesor bancario experto llamado Vivi..."},
+                    {"role": "user", "content": mensaje}
+                ]
+            )
+            if tiene_clave:
+                # Mensaje corto + botón infografía
+                texto = "📊 Tengo un contenido para ti sobre este tema."
+                root.after(200, lambda: agregar_mensaje_bot(texto))
+                # botón justo debajo
+                btn_info = tk.Button(mensajes_frame, text="📥 Generar Infografía",
+                                     command=generar_infografia)
+                btn_info.pack(anchor="e", pady=(0,8), padx=10)
+                scroll_al_final()
+            else:
+                # Respuesta completa
+                texto = respuesta.choices[0].message.content.strip()
+                root.after(200, lambda: agregar_mensaje_bot(texto))
+        except Exception as e:
+            root.after(200, lambda: agregar_mensaje_bot(f"Lo siento, ocurrió un error: {e}"))
+
+    # --- ÁREA DE ENTRADA ---
     input_frame = tk.Frame(root, bg="white")
-    input_frame.pack(fill="x", padx=10, pady=5)
-
+    input_frame.pack(fill="x", padx=10, pady=10)
     entry_msg = ttk.Entry(input_frame, font=("Helvetica", 10))
-    entry_msg.pack(side="left", fill="x", expand=True, padx=(0, 10))
-
-    
-
+    entry_msg.pack(side="left", fill="x", expand=True, padx=(0,10))
     entry_msg.bind("<Return>", enviar_mensaje)
-    btn_enviar = ttk.Button(input_frame, text="➤", command=enviar_mensaje)
+
+    btn_enviar = ttk.Button(input_frame, text="➤", command=enviar_mensaje,
+                            style="DaviviendaRed.TButton")
     btn_enviar.pack(side="right")
 
+    # Saludo inicial
     agregar_mensaje_bot(f"Buenos días señor {nombre.capitalize()}. Bienvenido a Davivienda ¿en qué puedo ayudarle?")
-    
-    
+
 
 # --------------------------
 # INICIO
