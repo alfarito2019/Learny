@@ -17,6 +17,10 @@ df["Clave"] = df["Clave"].astype(str).str.replace(".0", "", regex=False)
 
 cliente_activo = None
 
+
+cedula_usuario = None
+
+
 # --------------------------
 # ROOT
 # --------------------------
@@ -106,6 +110,8 @@ def mostrar_pantalla_documento():
 
     def verificar_entrada(event):
         cedula = entry_documento.get().strip()
+        global cedula_usuario
+        cedula_usuario=cedula
         if cedula in df["Cedula"].values:
             btn_iniciar.configure(state="normal", style="DaviviendaRed.TButton")
         else:
@@ -299,9 +305,11 @@ def mostrar_chat():
         burbuja.pack(anchor="e", padx=10, pady=4)
         scroll_al_final()
 
+
     def generar_infografia():
-        ced = cliente_activo["Cedula"] if cliente_activo else ""
-        subprocess.run(["python", "imagen.py", ced])
+        global cedula_usuario
+        # ced = cliente_activo["Cedula"] if cliente_activo else ""
+        subprocess.run(["python", "imagen.py", cedula_usuario])
 
     # == AQUI VA TODA LA LÓGICA DE ENVÍO ==
     def enviar_mensaje(event=None):
