@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import pandas as pd
 import tkinter.messagebox as msg
 import tkinter as tk
+from groq import Groq
+import subprocess
 
 # --------------------------
 # BASE DE DATOS Y VARIABLES
@@ -19,8 +21,8 @@ cliente_activo = None
 # ROOT
 # --------------------------
 root = ttk.Window(themename="flatly")
-root.geometry("360x750")
-root.resizable(False, False)
+root.geometry("360x690")
+root.resizable(False, True)
 
 # --------------------------
 # ESTILOS
@@ -242,6 +244,90 @@ def mostrar_pantalla_principal():
 # CHAT
 # --------------------------
 def mostrar_chat():
+    def scroll_al_final():
+        canvas.update_idletasks()
+        canvas.yview_moveto(1.0)
+
+    def _on_mousewheel(event):
+        canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+    
+    def agregar_mensaje_bot(texto):
+        burbuja = tk.Label(mensajes_frame, text=texto, bg="white", wraplength=250,
+                           justify="left", anchor="w", font=("Helvetica", 10), padx=10, pady=5,
+                           bd=1, relief="solid")
+        burbuja.pack(anchor="w", padx=10, pady=4)
+        scroll_al_final()
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+    def agregar_mensaje_usuario(texto):
+        burbuja = tk.Label(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
+                           justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
+                           bd=1, relief="solid")
+        burbuja.pack(anchor="e", padx=10, pady=4)
+        scroll_al_final()
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        
+    def agregar_boton_usuario(texto):
+        burbuja = tk.Button(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
+                    justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
+                    bd=1, relief="solid", command=lambda: print(f"Botón '{texto}' presionado"))
+        burbuja.pack(anchor="e", padx=10, pady=4)
+        
+    def generar_infografia():
+        subprocess.run(["python", "imagen.py",cedula_usuario])
+
+    def enviar_mensaje(event=None):
+        client = Groq(api_key="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")
+        
+        mensaje = entry_msg.get().strip()
+        if mensaje == "":
+            return
+        agregar_mensaje_usuario(mensaje)
+        entry_msg.delete(0, "end")
+        palabras_clave = ["interés", "intereses", "crédito", "créditos", "capital", "cuota", "cuotas"]
+        mensaje_tiene_palabras_clave = any(palabra in mensaje.lower() for palabra in palabras_clave)
+
+        try:
+            # Llamada a Groq con rol de asesor bancario
+            respuesta = client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Eres un asesor bancario experto llamado Vivi. Tu objetivo es ayudar a los usuarios con dudas relacionadas con productos financieros, tasas de interés, créditos, simulaciones, inversiones y educación financiera. Responde de forma clara, amigable y profesional. En el primer mensaje preséntate como Hola soy Vivi, un asistente de Davivienda, ¿En qué puedo ayudarte hoy?"
+                    },
+                    {
+                        "role": "user",
+                        "content": mensaje
+                    }
+                ]
+            )
+
+            # Si hay palabras clave, da una respuesta más corta
+            if mensaje_tiene_palabras_clave:
+                respuesta = "📊 Tengo un contenido para ti sobre este tema."
+                root.after(500, lambda: agregar_mensaje_bot(respuesta))
+                print("Mensaje contiene palabras clave financieras, respuesta abreviada.")
+            else:
+                respuesta = respuesta.choices[0].message.content.strip()
+                root.after(500, lambda: agregar_mensaje_bot(respuesta))
+
+        except Exception as e:
+            respuesta = f"Lo siento, ocurrió un error: {e}"
+            root.after(500, lambda: agregar_mensaje_bot(respuesta))
+        
+        
+
+        # Mostrar botón justo debajo del mensaje si aplica
+        if mensaje_tiene_palabras_clave:
+            frame_boton = tk.Frame(chat_frame, bg="white")
+            boton_infografia = tk.Button(frame_boton, text="📥 Generar Infografía", command=generar_infografia)
+            boton_infografia.pack(pady=2)
+            frame_boton.pack(fill="x", padx=10, pady=(0, 10))  # Pegado justo después del mensaje
+            
+        scroll_al_final()
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+    
     clear()
 
     # Canvas para encabezado con imagen
@@ -284,31 +370,15 @@ def mostrar_chat():
     entry_msg = ttk.Entry(input_frame, font=("Helvetica", 10))
     entry_msg.pack(side="left", fill="x", expand=True, padx=(0, 10))
 
-    def agregar_mensaje_bot(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="white", wraplength=250,
-                           justify="left", anchor="w", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="w", padx=10, pady=4)
-
-    def agregar_mensaje_usuario(texto):
-        burbuja = tk.Label(mensajes_frame, text=texto, bg="#E5EFFB", wraplength=250,
-                           justify="left", anchor="e", font=("Helvetica", 10), padx=10, pady=5,
-                           bd=1, relief="solid")
-        burbuja.pack(anchor="e", padx=10, pady=4)
-
-    def enviar_mensaje(event=None):
-        mensaje = entry_msg.get().strip()
-        if mensaje == "":
-            return
-        agregar_mensaje_usuario(mensaje)
-        entry_msg.delete(0, "end")
-        root.after(500, lambda: agregar_mensaje_bot("Buenos días. Bienvenido a Davivienda ¿en qué puedo ayudarle?"))
+    
 
     entry_msg.bind("<Return>", enviar_mensaje)
     btn_enviar = ttk.Button(input_frame, text="➤", command=enviar_mensaje)
     btn_enviar.pack(side="right")
 
     agregar_mensaje_bot(f"Buenos días señor {nombre.capitalize()}. Bienvenido a Davivienda ¿en qué puedo ayudarle?")
+    
+    
 
 # --------------------------
 # INICIO
